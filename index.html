@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Detector</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        textarea {
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            resize: none;
+            margin-bottom: 1rem;
+            font-family: 'Arial', sans-serif;
+            min-height: 100px;
+        }
+
+        input[type="submit"] {
+            padding: 0.75rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Button Click Animation */
+        input[type="submit"]:active {
+            transform: scale(0.98);
+            transition: transform 0.2s ease;
+        }
+
+        /* Result Display */
+        h2 {
+            text-align: center;
+            margin-top: 2rem;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        /* Result Animation */
+        .show-result {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* Spam and Ham Color Coding */
+        .spam {
+            color: #ff4c4c;
+        }
+
+        .ham {
+            color: #4CAF50;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spam Detector</h1>
+        <form action="/predict" method="post">
+            <label for="message">Enter your message:</label>
+            <textarea id="message" name="message" rows="4" cols="50" placeholder="Type your message here..."></textarea>
+            <input type="submit" value="Predict">
+        </form>
+        <h2 id="result"></h2>
+    </div>
+
+    <script>
+        const form = document.querySelector('form');
+        const resultElement = document.querySelector('#result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            resultElement.classList.remove('show-result', 'spam', 'ham');
+            resultElement.innerText = 'Predicting...';
+            
+            const message = document.querySelector('#message').value;
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: new URLSearchParams(new FormData(form)),
+            });
+            const result = await response.json();
+
+            // Add animation class and style based on prediction
+            resultElement.innerText = `Prediction: ${result.prediction}`;
+            resultElement.classList.add('show-result');
+            resultElement.classList.add(result.prediction.toLowerCase());
+        });
+    </script>
+</body>
+</html>
